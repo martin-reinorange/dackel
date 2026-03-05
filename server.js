@@ -13,6 +13,7 @@ const path = require('path');
 const crypto = require('crypto');
 
 const PORT = process.env.PORT || 3000;
+const HOST = '0.0.0.0';
 
 // ─── SHARED STATE ───────────────────────────────────────────────────────────
 let state = {
@@ -344,7 +345,7 @@ function wsFrame(socket, opcode, payload) {
 }
 
 // ─── START ───────────────────────────────────────────────────────────────────
-server.listen(PORT, () => {
+server.listen(PORT, HOST, () => {
   console.log(`\n🔥 FEUER WORKSHOP SERVER LÄUFT`);
   console.log(`   → Teilnehmer: http://localhost:${PORT}`);
   console.log(`   → Admin:      http://localhost:${PORT}/admin`);
