@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎛️ Admin – Feuer Workshop</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;700&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--fire:#FF4500;--fire2:#FF8C00;--yellow:#FFD700;--dark:#080808;--card:#111;--border:#222;--text:#F0EEE8;--muted:#666;--green:#39FF14}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--dark);color:var(--text);font-family:'Space Grotesk',sans-serif;padding:0}
+.header{background:var(--card);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;position:sticky;top:0;z-index:100}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;background:linear-gradient(135deg,var(--fire),var(--yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.logo span{font-size:14px;color:var(--muted);font-family:'Space Grotesk',sans-serif;-webkit-text-fill-color:var(--muted);margin-left:8px;letter-spacing:1px}
+.ctrl-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{padding:8px 16px;border-radius:6px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:all .15s;border:1px solid}
+.btn-fire{background:linear-gradient(135deg,var(--fire),var(--fire2));color:#fff;border-color:transparent}
+.btn-fire:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(255,69,0,.4)}
+.btn-yellow{background:transparent;color:var(--yellow);border-color:var(--yellow)}
+.btn-yellow:hover{background:rgba(255,215,0,.08)}
+.btn-ghost{background:transparent;color:var(--muted);border-color:var(--border)}
+.btn-ghost:hover{color:var(--text);border-color:#444}
+.btn-red{background:transparent;color:#FF4444;border-color:#FF4444}
+.btn-red:hover{background:rgba(255,68,68,.1)}
+.timer-big{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--yellow);letter-spacing:3px;min-width:80px;text-align:center}
+#connDot{font-size:12px;padding:3px 8px;border-radius:10px;font-weight:700}
+.main{padding:24px;max-width:1300px;margin:0 auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-bottom:24px}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px}
+.panel-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--fire);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.participant{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:14px}
+.participant:last-child{border-bottom:none}
+.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.note-row{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;line-height:1.5}
+.note-row:last-child{border-bottom:none}
+.note-author{font-size:10px;color:var(--muted);margin-top:2px;flex-shrink:0}
+.vote-count{margin-left:auto;font-size:12px;font-weight:700;color:var(--yellow);flex-shrink:0;padding-left:8px}
+.board-section{margin-bottom:20px}
+.board-label{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.empty{font-size:13px;color:var(--muted);font-style:italic}
+.poker-sit{margin-bottom:16px;padding:14px;background:#0d0d0d;border-radius:8px;border:1px solid var(--border)}
+.sit-q{font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.5}
+.vote-chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:5px 12px;border-radius:6px;font-size:13px;font-weight:700;border:1px solid}
+.chip.hidden{filter:blur(8px)}
+.wf-item{margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.wf-item:last-child{border-bottom:none}
+.wf-label{font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;font-weight:700;text-transform:uppercase}
+.wf-text{font-family:'Caveat',cursive;font-size:16px;line-height:1.6;color:var(--text);white-space:pre-wrap}
+.vision-item{margin-bottom:10px;padding:12px;background:#0d0d0d;border-radius:8px;border-left:3px solid}
+.vis-text{font-family:'Caveat',cursive;font-size:17px;line-height:1.5;margin-bottom:4px}
+.vis-meta{font-size:11px;color:var(--muted);display:flex;gap:12px}
+.phase-btn{padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;transition:all .15s;border:1px solid var(--border);color:var(--muted);background:transparent;letter-spacing:1px}
+.phase-btn:hover,.phase-btn.active{border-color:var(--fire);color:var(--fire);background:rgba(255,69,0,.08)}
+.stats-row{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:20px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 20px;flex:1;min-width:120px;text-align:center}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:42px;background:linear-gradient(135deg,var(--fire),var(--yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.stat-label{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <div class="logo">🎛️ ADMIN <span>Moderations-Dashboard</span></div>
+  </div>
+  <div class="ctrl-row">
+    <div style="font-size:12px;color:var(--muted)">TIMER:</div>
+    <button class="btn btn-yellow" onclick="startTimer(5*60)">5 Min</button>
+    <button class="btn btn-yellow" onclick="startTimer(10*60)">10 Min</button>
+    <button class="btn btn-yellow" onclick="startTimer(15*60)">15 Min</button>
+    <button class="btn btn-ghost" onclick="stopTimer()">⏹ Stop</button>
+    <div class="timer-big" id="timerBig">—</div>
+    <button class="btn btn-fire" onclick="window.print()">📄 Drucken</button>
+    <button class="btn btn-red" onclick="resetAll()">↺ Reset</button>
+    <div id="connDot">•••</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="stats-row" id="statsRow"></div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+const DLABELS=['','Tell','Sell','Consult','Agree','Advise','Inquire','Delegate'];
+const DCOLS  =['','#FF4500','#FF6B35','#FFA040','#FFD700','#39FF14','#00BFFF','#AA44FF'];
+const BOARDS=[
+  {id:'bremst',label:'🛑 WAS BREMST?',color:'#FF4500'},
+  {id:'antreibt',label:'⚡ WAS TREIBT AN?',color:'#FFD700'},
+  {id:'aendern',label:'🔧 WAS ÄNDERN?',color:'#39FF14'},
+  {id:'vision_braindump',label:'✨ IDEALVISION',color:'#00BFFF'},
+];
+const WF=[{id:'start',label:'START'},{id:'entscheid',label:'ENTSCHEID'},{id:'done',label:'DONE'},{id:'deploy',label:'DEPLOY'}];
+const SITS=["Bug Live-Kunde","Technischer Ansatz","Unklares Ticket","Plan ändern","Definition of Done","Task ablehnen?","Reporting-Pflicht","Prozessverbesserung"];
+
+let ws, state={notes:{bremst:[],antreibt:[],aendern:[],vision_braindump:[]},poker:{},workflow:{start:'',entscheid:'',done:'',deploy:''},visions:[],participants:[]};
+let timerInterval;
+
+function connect() {
+  const proto = location.protocol==='https:'?'wss':'ws';
+  ws = new WebSocket(`${proto}://${location.host}`);
+  ws.onopen = () => { setConn(true); ws.send(JSON.stringify({type:'SET_NAME',name:'🎛️ Admin'})); };
+  ws.onclose = () => { setConn(false); setTimeout(connect,3000); };
+  ws.onmessage = e => {
+    try {
+      const msg = JSON.parse(e.data);
+      if (msg.type==='INIT') { Object.assign(state, msg.state); render(); }
+      else if (msg.type==='STATE_UPDATE') { Object.assign(state, msg); render(); }
+      else if (msg.type==='PARTICIPANTS') { state.participants=msg.participants; render(); }
+      else if (msg.type==='FULL_RESET') { Object.assign(state, msg.state); render(); }
+    } catch(e){}
+  };
+}
+
+function send(obj) { if(ws&&ws.readyState===1) ws.send(JSON.stringify(obj)); }
+function setConn(ok) {
+  const el=document.getElementById('connDot');
+  el.textContent=ok?'LIVE':'OFFLINE';
+  el.style.cssText=ok?'background:rgba(57,255,20,.1);color:#39FF14;border:1px solid rgba(57,255,20,.3);border-radius:10px;padding:3px 8px;font-size:12px;font-weight:700':'background:rgba(255,69,0,.1);color:#FF4500;border:1px solid rgba(255,69,0,.3);border-radius:10px;padding:3px 8px;font-size:12px;font-weight:700';
+}
+
+function render() {
+  renderStats();
+  renderGrid();
+  if (state.timer) startTimerDisplay(state.timer);
+}
+
+function renderStats() {
+  const totalNotes = Object.values(state.notes).reduce((s,a)=>s+a.length,0);
+  const pokerVotes = Object.values(state.poker).reduce((s,v)=>s+Object.keys(v).length,0);
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat"><div class="stat-num">${state.participants.length}</div><div class="stat-label">Teilnehmer</div></div>
+    <div class="stat"><div class="stat-num">${totalNotes}</div><div class="stat-label">Notizen total</div></div>
+    <div class="stat"><div class="stat-num">${pokerVotes}</div><div class="stat-label">Poker-Votes</div></div>
+    <div class="stat"><div class="stat-num">${state.visions.length}</div><div class="stat-label">Visionen</div></div>`;
+}
+
+function renderGrid() {
+  const g = document.getElementById('grid');
+  g.innerHTML = '';
+
+  // PARTICIPANTS
+  g.innerHTML += `<div class="panel">
+    <div class="panel-title">👥 TEILNEHMER <span style="font-size:13px;color:var(--muted)">${state.participants.length}</span></div>
+    ${state.participants.length===0 ? '<div class="empty">Noch niemand verbunden</div>' :
+      state.participants.map(p=>`<div class="participant">
+        <div class="dot" style="background:${p.color}"></div>
+        <span>${p.name}</span>
+      </div>`).join('')}
+  </div>`;
+
+  // BRAINDUMP
+  const braindumpHTML = BOARDS.map(b => {
+    const notes = (state.notes[b.id]||[]).sort((a,bv)=>bv.votes-a.votes);
+    return `<div class="board-section">
+      <div class="board-label" style="color:${b.color}">${b.label} <span style="font-size:12px;color:var(--muted)">(${notes.length})</span></div>
+      ${notes.length===0 ? '<div class="empty">Noch nichts</div>' :
+        notes.map(n=>`<div class="note-row">
+          <div>
+            <div>${n.text}</div>
+            <div class="note-author">${n.author}</div>
+          </div>
+          ${n.votes>0?`<div class="vote-count">+${n.votes}</div>`:''}
+        </div>`).join('')}
+    </div>`;
+  }).join('');
+
+  g.innerHTML += `<div class="panel" style="grid-column:span 2">
+    <div class="panel-title">📝 BRAIN DUMP</div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px">${braindumpHTML}</div>
+  </div>`;
+
+  // DELEGATION POKER
+  const pokerHTML = SITS.map((sit,i) => {
+    const votes = state.poker[i] || {};
+    const allRevealed = Object.values(votes).every(v=>v.revealed);
+    const vHTML = Object.values(votes).map(v=>`
+      <div class="chip ${allRevealed?'':'hidden'}" style="border-color:${DCOLS[v.level]};color:${DCOLS[v.level]};background:${DCOLS[v.level]}18">
+        ${v.name}: ${v.level} ${DLABELS[v.level]}
+      </div>`).join('');
+    return `<div class="poker-sit">
+      <div style="font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:4px">SITUATION ${i+1}</div>
+      <div class="sit-q">${sit}</div>
+      ${Object.keys(votes).length===0 ? '<div class="empty">Keine Votes</div>' :
+        `<div class="vote-chips">${vHTML}</div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          ${!allRevealed?`<button class="btn btn-yellow" style="font-size:11px;padding:4px 10px" onclick="reveal(${i})">Aufdecken</button>`:''}
+          <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="resetSit(${i})">Reset</button>
+        </div>`}
+    </div>`;
+  }).join('');
+
+  g.innerHTML += `<div class="panel">
+    <div class="panel-title">🃏 DELEGATION POKER</div>
+    ${pokerHTML}
+  </div>`;
+
+  // WORKFLOW
+  const wfHTML = WF.map(w => {
+    const val = state.workflow[w.id];
+    return `<div class="wf-item">
+      <div class="wf-label">${w.label}</div>
+      ${val ? `<div class="wf-text">${val}</div>` : '<div class="empty">Noch nichts</div>'}
+    </div>`;
+  }).join('');
+
+  g.innerHTML += `<div class="panel">
+    <div class="panel-title">⚙️ ARBEITSFLOW</div>
+    ${wfHTML}
+  </div>`;
+
+  // VISIONS
+  const visSorted = [...(state.visions||[])].sort((a,b)=>b.likes-a.likes);
+  const visHTML = visSorted.map(v => {
+    const hue = Math.abs(hashStr(v.text)) % 360;
+    return `<div class="vision-item" style="border-color:hsl(${hue},65%,45%)">
+      <div class="vis-text">${v.text}</div>
+      <div class="vis-meta">
+        <span style="color:${v.color}">${v.author}</span>
+        ${v.likes>0?`<span>❤️ ${v.likes}</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  g.innerHTML += `<div class="panel">
+    <div class="panel-title">✨ VISIONEN <span style="font-size:13px;color:var(--muted)">${state.visions.length}</span></div>
+    ${state.visions.length===0 ? '<div class="empty">Noch keine Visionen</div>' : visHTML}
+  </div>`;
+}
+
+function startTimer(s) { send({type:'START_TIMER',seconds:s}); }
+function stopTimer()   { send({type:'STOP_TIMER'}); clearInterval(timerInterval); document.getElementById('timerBig').textContent='—'; }
+function reveal(i)     { send({type:'REVEAL_POKER',situation:i}); }
+function resetSit(i)   { send({type:'RESET_POKER_SITUATION',situation:i}); }
+function resetAll()    { if(confirm('Alle Daten löschen?')) send({type:'RESET_ALL'}); }
+
+function startTimerDisplay(timer) {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(()=>{
+    const rem = Math.max(0,Math.ceil((timer.endsAt-Date.now())/1000));
+    const m=Math.floor(rem/60).toString().padStart(2,'0');
+    const s=(rem%60).toString().padStart(2,'0');
+    const el=document.getElementById('timerBig');
+    if(rem===0){el.textContent='⏰ ZEIT!';clearInterval(timerInterval);}
+    else{el.textContent=`${m}:${s}`;el.style.color=rem<=30?'var(--fire)':'var(--yellow)';}
+  },500);
+}
+
+function hashStr(s){let h=0;for(const c of String(s))h=(Math.imul(31,h)+c.charCodeAt(0))|0;return h;}
+
+connect();
+setInterval(render, 5000); // fallback re-render
+</script>
+</body>
+</html>
